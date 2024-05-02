@@ -41,41 +41,44 @@ export class AuthService {
   async signin(dto: AuthSigninDto, req: Request, res: Response) {
     const { email, password } = dto;
 
-    const foundUser = await this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-    if (!foundUser) {
-      throw new BadRequestException('Wrong credentials');
-    }
+    try {
+      const foundUser = await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
 
-    const isMatch = await this.comparePasswords({
-      password,
-      hash: foundUser.hashedPassword,
-    });
-    if (!isMatch) {
-      throw new BadRequestException('Wrong credentials');
-    }
-
-    const token = await this.signToken({
-      id: foundUser.id,
-      email: foundUser.email,
-    });
-
-    if (!token) {
-      throw new ForbiddenException();
-    }
-    res.cookie('token', token);
-    return res.send({
-      message: 'Logged in succefully',
-      user: {
+      if (!foundUser) {
+        throw new BadRequestException('Mot de passe ou email incorrecte');
+      }
+      const isMatch = await this.comparePasswords({
+        password,
+        hash: foundUser.hashedPassword,
+      });
+      if (!isMatch) {
+        throw new BadRequestException('Mot de passe ou email incorrecte');
+      }
+      const token = await this.signToken({
         id: foundUser.id,
         email: foundUser.email,
-        username: foundUser.username,
-      },
-      token,
-    });
+      });
+
+      if (!token) {
+        throw new ForbiddenException();
+      }
+      res.cookie('token', token);
+      return res.send({
+        message: 'Logged in succefully',
+        user: {
+          id: foundUser.id,
+          email: foundUser.email,
+          username: foundUser.username,
+        },
+        token,
+      });
+    } catch (error) {
+      return res.status(400).send({ message: error.message });
+    }
   }
   async signout(req: Request, res: Response) {
     res.clearCookie('token');
@@ -94,6 +97,6 @@ export class AuthService {
   async signToken(args: { id: string; email: string }) {
     const payload = args;
 
-    return this.jwt.signAsync(payload, { secret: jwtSecret, expiresIn: '1h' });
+    return this.jwt.signAsync(payload, { secret: jwtSecret, expiresIn: '24h' });
   }
 }
