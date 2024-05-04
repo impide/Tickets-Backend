@@ -25,7 +25,9 @@ export class AuthService {
       },
     });
     if (foundUser) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException(
+        "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.",
+      );
     }
     const hashedPassword = await this.hashPassword(password);
 
@@ -77,8 +79,6 @@ export class AuthService {
         token,
       });
     } catch (error) {
-      console.log(error);
-
       return res.status(400).send({ message: error.message });
     }
   }

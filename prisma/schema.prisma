@@ -23,6 +23,7 @@ model Ticket {
   title String
   description String
   status TicketStatus @default(PENDING)
+  response String?
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt()
   user User @relation(fields: [userId], references: [id])

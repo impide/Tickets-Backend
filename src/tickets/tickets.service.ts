@@ -37,6 +37,10 @@ export class TicketsService {
 
     const decodedUser = req.user as { id: string };
 
+    if (!ticket) {
+      throw new ForbiddenException();
+    }
+
     if (ticket.userId !== decodedUser.id) {
       throw new ForbiddenException();
     }

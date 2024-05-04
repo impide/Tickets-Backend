@@ -1,74 +1,78 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { PrismaService } from 'prisma/prisma.serive';
 import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
-    async getMyUser(id: string, req: Request) {
-        const user = await this.prisma.user.findUnique({where: {id}});
+  async getMyUser(id: string, req: Request) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true, username: true },
+    });
 
-        if (!user) {
-            throw new NotFoundException()
-        };
-        const decodedUser = req.user as {id:string, email:string};
+    if (!user) {
+      throw new NotFoundException();
+    }
+    const decodedUser = req.user as { id: string; email: string };
 
-        if (user.id !== decodedUser.id) {
-            throw new ForbiddenException()
-        };
-
-        delete user.hashedPassword;
-
-        return {user};
+    if (user.id !== decodedUser.id) {
+      throw new ForbiddenException();
     }
 
-    async getUsers() {
+    return { user };
+  }
 
-        return  await this.prisma.user.findMany({select: {id: true, email: true}})
+  async getUsers() {
+    return await this.prisma.user.findMany({
+      select: { id: true, email: true },
+    });
+  }
 
+  async deleteUser(id: string, req: Request) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    const decodedUser = req.user as { id: string; email: string };
+    if (!user) {
+      throw new NotFoundException();
     }
 
-    async deleteUser(id: string, req: Request) {
-  
-        const user = await this.prisma.user.findUnique({where: {id}});
- 
-        const decodedUser = req.user as {id:string, email:string};
-        console.log(req.user);
-        
-        
-        
-        if (user.id !== decodedUser.id) {
-            throw new ForbiddenException()
-        };
-
-        await this.prisma.user.delete({where: {id}})
-
-        return 'succes'
-
+    if (user.id !== decodedUser.id) {
+      throw new ForbiddenException();
     }
 
-    async updateUser(dto:UserDto, id: string, req: Request) {
-  
-        const {username} = dto; 
-        const user = await this.prisma.user.findUnique({where: {id}});
-        const decodedUser = req.user as {id:string, email:string};
-        
-        if (user.id !== decodedUser.id) {
-            throw new ForbiddenException()
-        };
+    await this.prisma.user.delete({ where: { id } });
 
-        await this.prisma.user.update({where: {
-            id
-          },
-          data: {
-            username,
-        }
-    })
+    return 'succes';
+  }
 
-        return {message: 'update was succesfull'};
-
+  async updateUser(dto: UserDto, id: string, req: Request) {
+    const { username } = dto;
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    const decodedUser = req.user as { id: string; email: string };
+    if (!user) {
+      throw new NotFoundException();
     }
 
+    if (user.id !== decodedUser.id) {
+      throw new ForbiddenException();
+    }
+
+    await this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        username,
+      },
+    });
+
+    return { message: 'update was succesfull' };
+  }
 }

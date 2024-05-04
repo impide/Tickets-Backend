@@ -8,16 +8,16 @@ export class AuthController {
 
   @Post('signup')
   signup(@Body() dto: AuthSignupDto) {
-    return this.authService.signup(dto)
+    return this.authService.signup(dto);
   }
 
   @Post('signin')
   signin(@Body() dto: AuthSigninDto, @Req() req, @Res() res) {
-    return this.authService.signin(dto, req, res)
+    return this.authService.signin(dto, req, res);
   }
 
   @Get('signout')
   signout(@Req() req, @Res() res) {
-    return this.authService.signout(req, res)
+    return this.authService.signout(req, res);
   }
 }
