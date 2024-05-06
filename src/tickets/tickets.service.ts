@@ -25,7 +25,13 @@ export class TicketsService {
     const decodedUser = req.user as { id: string; email: string };
 
     const tickets = await this.prisma.ticket.findMany({
-      select: { title: true, description: true, status: true, createdAt: true },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        createdAt: true,
+      },
       where: { userId: decodedUser.id },
     });
 

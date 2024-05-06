@@ -13,6 +13,7 @@ model User {
   email  String @unique
   username String
   hashedPassword String 
+  role UserRole @default(USER)
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt()
   tickets Ticket[]
@@ -33,4 +34,9 @@ model Ticket {
 enum TicketStatus {
   PENDING
   DONE
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }

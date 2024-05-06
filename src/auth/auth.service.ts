@@ -63,6 +63,7 @@ export class AuthService {
       const token = await this.signToken({
         id: foundUser.id,
         email: foundUser.email,
+        role: foundUser.role,
       });
 
       if (!token) {
@@ -96,7 +97,7 @@ export class AuthService {
     return await bcrypt.compare(args.password, args.hash);
   }
 
-  async signToken(args: { id: string; email: string }) {
+  async signToken(args: { id: string; email: string; role: string }) {
     const payload = args;
 
     return this.jwt.signAsync(payload, { secret: jwtSecret, expiresIn: '24h' });
