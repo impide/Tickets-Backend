@@ -16,6 +16,11 @@ export class AuthController {
     return this.authService.signin(dto, req, res);
   }
 
+  @Post('verify-token')
+  verifyToken(@Body('token') token: string) {
+    return this.authService.verifyToken(token);
+  }
+
   @Get('signout')
   signout(@Req() req, @Res() res) {
     return this.authService.signout(req, res);

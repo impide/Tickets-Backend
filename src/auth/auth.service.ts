@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.serive';
 import { AuthSigninDto, AuthSignupDto } from './dto/auth.dto';
@@ -53,6 +54,7 @@ export class AuthService {
       if (!foundUser) {
         throw new BadRequestException('Mot de passe ou email incorrecte');
       }
+
       const isMatch = await this.comparePasswords({
         password,
         hash: foundUser.hashedPassword,
@@ -76,6 +78,7 @@ export class AuthService {
           id: foundUser.id,
           email: foundUser.email,
           username: foundUser.username,
+          role: foundUser.role,
         },
         token,
       });
@@ -101,5 +104,15 @@ export class AuthService {
     const payload = args;
 
     return this.jwt.signAsync(payload, { secret: jwtSecret, expiresIn: '24h' });
+  }
+
+  async verifyToken(token: string) {
+    try {
+      const decoded = this.jwt.verify(token, { secret: jwtSecret });
+      // Assuming the decoded token is an object containing a `role` property
+      return { isAdmin: decoded.role === 'ADMIN' };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

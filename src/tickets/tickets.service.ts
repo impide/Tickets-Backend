@@ -1,7 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { PrismaService } from 'prisma/prisma.serive';
 import { TicketDto } from './dto/ticket.dto';
+import { TicketUpdateDto } from './dto/ticketUpdate.dto';
 
 @Injectable()
 export class TicketsService {
@@ -36,6 +41,50 @@ export class TicketsService {
     });
 
     return tickets;
+  }
+
+  async getAllTickets(req: Request) {
+    const checkRole = req.user as { role: string };
+    if (checkRole.role !== 'ADMIN') {
+      throw new ForbiddenException();
+    }
+    const allTickets = await this.prisma.ticket.findMany({
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        response: true,
+        status: true,
+        createdAt: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+
+    return allTickets;
+  }
+
+  async updateTicket(dto: TicketUpdateDto, id: string, req: Request) {
+    const { response } = dto;
+    const ticket = await this.prisma.ticket.findUnique({ where: { id } });
+
+    if (!ticket) {
+      throw new NotFoundException();
+    }
+
+    await this.prisma.ticket.update({
+      where: {
+        id,
+      },
+      data: {
+        response,
+      },
+    });
+
+    return { message: 'response was succesfull' };
   }
 
   async deleteTicket(id: string, req: Request) {

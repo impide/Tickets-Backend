@@ -12,6 +12,7 @@ import {
 import { TicketsService } from './tickets.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { TicketDto } from './dto/ticket.dto';
+import { TicketUpdateDto } from './dto/ticketUpdate.dto';
 
 @Controller('tickets')
 @UseGuards(JwtAuthGuard)
@@ -26,6 +27,18 @@ export class TicketsController {
   @Get('/')
   getTickets(@Req() req) {
     return this.ticketsService.getTickets(req);
+  }
+  @Get('allTickets')
+  getAllTickets(@Req() req) {
+    return this.ticketsService.getAllTickets(req);
+  }
+  @Put(':id')
+  updatePost(
+    @Body() dto: TicketUpdateDto,
+    @Param() params: { id: string },
+    @Req() req,
+  ) {
+    return this.ticketsService.updateTicket(dto, params.id, req);
   }
 
   @Delete(':id')
