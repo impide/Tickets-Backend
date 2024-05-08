@@ -36,6 +36,7 @@ export class TicketsService {
         description: true,
         status: true,
         createdAt: true,
+        response: true,
       },
       where: { userId: decodedUser.id },
     });

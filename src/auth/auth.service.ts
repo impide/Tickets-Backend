@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { jwtSecret } from '../utils/constants';
 import { Request, Response } from 'express';
+import { checkToken } from './auth.interface';
 
 @Injectable()
 export class AuthService {
@@ -62,6 +63,7 @@ export class AuthService {
       if (!isMatch) {
         throw new BadRequestException('Mot de passe ou email incorrecte');
       }
+
       const token = await this.signToken({
         id: foundUser.id,
         email: foundUser.email,
@@ -106,13 +108,17 @@ export class AuthService {
     return this.jwt.signAsync(payload, { secret: jwtSecret, expiresIn: '24h' });
   }
 
-  async verifyToken(token: string) {
+  async verifyToken(token: string, req: Request, res: Response) {
     try {
+      if (!req.cookies.token) {
+        throw new UnauthorizedException(checkToken.TOKEN_EXPIRED);
+      }
+
       const decoded = this.jwt.verify(token, { secret: jwtSecret });
-      // Assuming the decoded token is an object containing a `role` property
-      return { isAdmin: decoded.role === 'ADMIN' };
+
+      return res.status(200).send({ isAdmin: decoded.role === 'ADMIN' });
     } catch (error) {
-      throw new UnauthorizedException('Invalid token');
+      return res.status(400).send({ message: error.message });
     }
   }
 }
