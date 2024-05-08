@@ -8,9 +8,4 @@ export class TicketDto {
     message: 'La description doit faire entre 3 et 1000 charactères',
   })
   public description: string;
-
-  @Length(3, 1000, {
-    message: 'La réponse doit faire entre 3 et 1000 charactères',
-  })
-  public response: string;
 }

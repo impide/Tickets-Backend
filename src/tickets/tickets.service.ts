@@ -82,6 +82,7 @@ export class TicketsService {
       },
       data: {
         response,
+        status: 'DONE',
       },
     });
 
