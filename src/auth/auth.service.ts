@@ -73,7 +73,11 @@ export class AuthService {
       if (!token) {
         throw new ForbiddenException();
       }
-      res.cookie('token', token);
+      res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      });
       return res.send({
         message: 'Logged in succefully',
         user: {
