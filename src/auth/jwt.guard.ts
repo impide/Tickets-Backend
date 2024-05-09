@@ -4,7 +4,11 @@ import { AuthGuard } from '@nestjs/passport';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err, user, info) {
+    console.log(info);
+
     if (err || !user) {
+      console.log(err);
+
       if (info && info.message === 'No auth token') {
         throw new UnauthorizedException({
           message: 'No auth token',
