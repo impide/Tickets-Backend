@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(cookieParser());
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: 'https://ticket-manager-tony.netlify.app/',
     credentials: true,
   });
   await app.listen(PORT);
