@@ -19,9 +19,6 @@ export class UsersController {
 
   @Get(':id')
   getMyUser(@Param() params: { id: string }, @Req() req) {
-    const authToken = req.headers.authorization.replace('Bearer ', '');
-    console.log(req.headers.authorization);
-    console.log('authToken', authToken);
     return this.usersService.getMyUser(params.id, req);
   }
 
