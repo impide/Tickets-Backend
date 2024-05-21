@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { PrismaService } from 'prisma/prisma.serive';
+import { PrismaService } from 'prisma/prisma.service';
 import { TicketDto } from './dto/ticket.dto';
 import { TicketUpdateDto } from './dto/ticketUpdate.dto';
 
