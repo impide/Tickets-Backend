@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 import { TicketDto } from './dto/ticket.dto';
 import { TicketUpdateDto } from './dto/ticketUpdate.dto';
 
