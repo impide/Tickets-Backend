@@ -11,6 +11,8 @@ async function bootstrap() {
   app.enableCors({
     origin: 'https://tickets-front-end-kappa.vercel.app',
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Allow-Origin',
   });
   await app.listen(PORT);
 }
